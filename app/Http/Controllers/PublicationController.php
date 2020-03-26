@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Publication;
 
-class PostController extends Controller
+class PublicationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +36,27 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required|min:3|max:200:regex:[A-Za-z1-9]',
+            'text' => 'required|min:3|max:1000:regex:[A-Za-z1-9]'
+        ]);
+
+        $publication = new Publication;
+
+        $slug = Str::slug($request->input('title'));
+
+        $publication->fill([
+            'title' => $request->input('title'),
+            'text' => $request->input('text'),
+            'slug' => $slug,
+            'user_id' => auth()->user()->id
+        ])->save();
+        
+        //return back();
+
+        return redirect()
+            ->route('publication.show', $publication->id)
+            ->with('success', 'Запись успешно создана!');
     }
 
     /**
@@ -45,7 +67,9 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $publication = Publication::findOrFail($id);
+
+        return view('publication.show', compact('publication'));
     }
 
     /**

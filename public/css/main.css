@@ -1,5 +1,26 @@
-.user-name {
+.user-city {
     color: #735eca;
+}
+
+.user-name {
+    color: #333;
     display: block;
-    font-size: 16px !important;
+    font-size: 17px !important;
+}
+
+.user-name:hover {
+    color: #333;
+}
+
+
+.user__name {
+    color: #606ae0;
+    display: block;
+    font-size: 15px !important;
+}
+
+
+.di-nav-link {
+  display: block;
+  padding: 0.15rem 1rem;
 }

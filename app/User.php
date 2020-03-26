@@ -67,9 +67,9 @@ class User extends Authenticatable
       return $this->hasOne('App\City', 'id', 'city_id');
     }
 
-    public function posts()
+    public function publications()
     {
-      return $this->hasMany('App\Post');
+      return $this->hasMany('App\Publication');
     }
 
     public function followers()
@@ -84,7 +84,7 @@ class User extends Authenticatable
 
     public function photos()
     {
-      return $this->hasMany('App\Photo', 'user_id')->orderByDesc('id');
+      return $this->hasMany('App\Photo', 'user_id')->where('type', NULL)->orderByDesc('id');
     }
 
 }

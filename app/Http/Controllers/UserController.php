@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\User;
+use App\Photo;
 
 class UserController extends Controller
 {
@@ -14,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::select('*')->orderByDesc('last_online_at')->get();
+        $users = User::select('*')->orderByDesc('last_online_at')->paginate(6);
 
         return view('user.index', compact('users'));
     }
@@ -73,20 +75,68 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'min:3|max:25',
+            'biography' => 'min:3|max:200'
+        ]);
+
+        $user = auth()->user();
+
+        $user->fill([
+            'name' => $request->input('name'),
+            'biography' => $request->input('biography'),
+        ])->save();
+        
+        return redirect()
+            ->route('user.edit')
+            ->with('success', 'Изменения успешно сохранены!');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function editAvatar()
+    {
+        return view('user.edit_avatar');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAvatar(Request $request)
+    {
         $data = $request->image;
 
 
         list($type, $data) = explode(';', $data);
         list(, $data)      = explode(',', $data);
 
+        $photoHash = Str::random(11);
 
         $data = base64_decode($data);
-        $image_name= time().'.png';
-        $path = storage_path('app/public/photos/') . $image_name;
+        $image_name= $photoHash;
+        $ext = 'png';
+        $path = storage_path('app/public/photos/') . $image_name.'.'.$ext;
 
-            $user = auth()->user();
-            $user->avatar = $image_name;
-            $user->save();
+        $photo = new Photo;
+        $photo->name = $image_name;
+        $photo->alt = $image_name;
+        $photo->extension = 'png';
+        $photo->type = 1;
+        $photo->user()->associate($request->user());
+        $photo->save();
+
+        //
+        $user = auth()->user();
+        $user->avatar = $image_name.'.'.$ext;
+        $user->save();
 
         file_put_contents($path, $data);
 

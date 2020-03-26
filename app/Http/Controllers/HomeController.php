@@ -41,7 +41,24 @@ class HomeController extends Controller
         $path = storage_path('app/public/photos/') . $filename;
     
         if (!File::exists($path)) 
-            $path = storage_path('app/public/photos/') . 'default.jpg';
+            $path = storage_path('app/public/photos/') . 'j31eEfLAt01.png';
+
+        $file = File::get($path);
+        $type = File::mimeType($path);
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", $type);
+
+        return $response;
+    }
+
+    public function getAPhoto($filename)
+    {
+
+        $path = storage_path('app/public/photos/') . $filename;
+    
+        if (!File::exists($path)) 
+            $path = storage_path('app/public/photos/') . 'j31eEfLAt01.png';
 
         $file = File::get($path);
         $type = File::mimeType($path);

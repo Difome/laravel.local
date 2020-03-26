@@ -78,7 +78,7 @@ class PhotoController extends Controller
             $photo->user()->associate($request->user());
             $photo->save();
 
-            return redirect('/@'.auth()->user()->username)->with('success', 'Фото успешно загружено!');
+            return redirect()->route('user.photos', auth()->user()->username)->with('success', 'Фото успешно загружено!');
         }
     }
 
@@ -102,8 +102,10 @@ class PhotoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        //
+    {   
+        $photo = Photo::find(); 
+        
+        return view('photo.edit');
     }
 
     /**

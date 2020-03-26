@@ -19,6 +19,7 @@ class CreatePhotosTable extends Migration
             $table->text('description')->nullable();
             $table->string('extension');
             $table->string('alt')->nullable();
+            $table->bigInteger('type')->nullable();
             $table->bigInteger('user_id');
             $table->timestamps();
         });
